@@ -19,7 +19,7 @@ export default function Navbar() {
       setUser(user)
     }
     checkUser()
-    const { data: l } = supabase.auth.onAuthStateChange((_, s) => setUser(s?.user ?? null))
+    const { data: l } = supabase.auth.onAuthStateChange((_: string, s: any) => setUser(s?.user ?? null))
     return () => l.subscription.unsubscribe()
   }, [])
 
