@@ -13,26 +13,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (authErr || !user) return res.status(401).json({ error: 'Unauthorized' })
 
     const { data: pending, error: pendErr } = await supabaseAdmin
-      .from('payments').select('*').eq('user_id', userId).eq('order_id', orderId).eq('status', 'pending').single()
+      .from('payments').select('*').eq('user_id', userId).eq('order_id', orderId).eq('status', 'pending').single() as any
     if (pendErr || !pending) return res.status(400).json({ error: 'No matching pending payment found' })
 
     const provider = getPaymentProvider()
     const result   = await provider.verifyPayment({ userId, orderId, paymentId, signature })
 
     if (!result.success) {
-      await supabaseAdmin.from('payments').update({ status: 'failed' }).eq('order_id', orderId)
+      await (supabaseAdmin.from('payments') as any).update({ status: 'failed' }).eq('order_id', orderId)
       return res.status(400).json({ error: result.error || 'Payment verification failed' })
     }
 
-    await supabaseAdmin.from('payments').update({ status: 'success', payment_id: paymentId }).eq('order_id', orderId)
+    await (supabaseAdmin.from('payments') as any).update({ status: 'success', payment_id: paymentId }).eq('order_id', orderId)
 
-    await supabaseAdmin.from('users').upsert({
+    await (supabaseAdmin.from('users') as any).upsert({
       id: userId, is_pro: true,
       payment_provider: result.provider, payment_id: paymentId,
       pro_activated_at: new Date().toISOString(),
     }, { onConflict: 'id' })
 
-    await supabaseAdmin.from('subscriptions').upsert({
+    await (supabaseAdmin.from('subscriptions') as any).upsert({
       user_id: userId, plan: 'pro', status: 'active',
       current_period_end: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
     }, { onConflict: 'user_id' })

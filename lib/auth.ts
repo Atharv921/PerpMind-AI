@@ -19,9 +19,9 @@ export async function incrementUsage(userId: string): Promise<void> {
   const today = new Date().toISOString().split('T')[0]
   const { data } = await supabaseAdmin.from('usage').select('id, tests_generated').eq('user_id', userId).eq('date', today).single() as any
   if (data) {
-    await supabaseAdmin.from('usage').update({ tests_generated: data.tests_generated + 1 }).eq('id', data.id)
+    await (supabaseAdmin.from('usage') as any).update({ tests_generated: data.tests_generated + 1 }).eq('id', data.id)
   } else {
-    await supabaseAdmin.from('usage').insert({ user_id: userId, date: today, tests_generated: 1 })
+    await (supabaseAdmin.from('usage') as any).insert({ user_id: userId, date: today, tests_generated: 1 })
   }
 }
 
@@ -34,10 +34,10 @@ export async function canGenerateTest(userId: string): Promise<{
 }
 
 export async function initializeUserRecord(userId: string): Promise<void> {
-  await supabaseAdmin.from('users').upsert({ id: userId, is_pro: false }, { onConflict: 'id', ignoreDuplicates: true })
-  const { data: existing } = await supabaseAdmin.from('subscriptions').select('id').eq('user_id', userId).single()
+  await (supabaseAdmin.from('users') as any).upsert({ id: userId, is_pro: false }, { onConflict: 'id', ignoreDuplicates: true })
+  const { data: existing } = await supabaseAdmin.from('subscriptions').select('id').eq('user_id', userId).single() as any
   if (!existing) {
-    await supabaseAdmin.from('subscriptions').insert({
+    await (supabaseAdmin.from('subscriptions') as any).insert({
       user_id: userId, plan: 'free', status: 'active',
       stripe_customer_id: '', stripe_subscription_id: '',
       current_period_end: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
@@ -48,6 +48,6 @@ export async function initializeUserRecord(userId: string): Promise<void> {
 export const initializeUserSubscription = initializeUserRecord
 
 export async function getUserProfile(userId: string) {
-  const { data } = await supabaseAdmin.from('users').select('*').eq('id', userId).single()
+  const { data } = await supabaseAdmin.from('users').select('*').eq('id', userId).single() as any
   return data
 }

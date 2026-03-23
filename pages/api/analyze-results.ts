@@ -21,13 +21,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const analysis = await analyzeTestResults(questions, answers, score, questions.length)
 
-    const { data: savedResult, error: saveErr } = await supabaseAdmin
-      .from('test_results')
+    const { data: savedResult, error: saveErr } = await (supabaseAdmin
+      .from('test_results') as any)
       .upsert({ test_id: testId, user_id: userId, answers, score, total_questions: questions.length, time_taken: timeTaken || 0, analysis })
       .select().single()
     if (saveErr) throw saveErr
 
-    await supabaseAdmin.from('tests').update({ score, completed_at: new Date().toISOString() }).eq('id', testId)
+    await (supabaseAdmin.from('tests') as any).update({ score, completed_at: new Date().toISOString() }).eq('id', testId)
     return res.status(200).json({ score, totalQuestions: questions.length, analysis, resultId: savedResult.id })
   } catch (err: any) {
     console.error('[analyze-results]', err)

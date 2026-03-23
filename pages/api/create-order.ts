@@ -12,13 +12,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const { data: { user }, error: authErr } = await supabaseAdmin.auth.admin.getUserById(userId)
     if (authErr || !user) return res.status(401).json({ error: 'Unauthorized' })
 
-    const { data: userRow } = await supabaseAdmin.from('users').select('is_pro').eq('id', userId).single()
+    const { data: userRow } = await supabaseAdmin.from('users').select('is_pro').eq('id', userId).single() as any
     if (userRow?.is_pro) return res.status(400).json({ error: 'User is already on Pro plan' })
 
     const provider = getPaymentProvider()
     const order    = await provider.createOrder(userId, PRO_AMOUNT, PRO_CURRENCY)
 
-    await supabaseAdmin.from('payments').insert({
+    await (supabaseAdmin.from('payments') as any).insert({
       user_id: userId, order_id: order.orderId,
       amount: order.amount, currency: order.currency,
       payment_provider: order.provider, status: 'pending',
