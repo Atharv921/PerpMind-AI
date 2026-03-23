@@ -14,7 +14,11 @@ export default function Navbar() {
   const supabase = createBrowserClient()
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => setUser(data.user))
+    const checkUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      setUser(user)
+    }
+    checkUser()
     const { data: l } = supabase.auth.onAuthStateChange((_, s) => setUser(s?.user ?? null))
     return () => l.subscription.unsubscribe()
   }, [])
