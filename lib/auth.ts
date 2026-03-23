@@ -3,21 +3,21 @@ import { supabaseAdmin } from '@/lib/supabase'
 export const FREE_DAILY_LIMIT = 2
 
 export async function isUserPro(userId: string): Promise<boolean> {
-  const { data: userRow } = await supabaseAdmin.from('users').select('is_pro').eq('id', userId).single()
+  const { data: userRow } = await supabaseAdmin.from('users').select('is_pro').eq('id', userId).single() as any
   if (userRow?.is_pro === true) return true
-  const { data: sub } = await supabaseAdmin.from('subscriptions').select('plan, status').eq('user_id', userId).single()
+  const { data: sub } = await supabaseAdmin.from('subscriptions').select('plan, status').eq('user_id', userId).single() as any
   return sub?.plan === 'pro' && sub?.status === 'active'
 }
 
 export async function getDailyUsage(userId: string): Promise<number> {
   const today = new Date().toISOString().split('T')[0]
-  const { data } = await supabaseAdmin.from('usage').select('tests_generated').eq('user_id', userId).eq('date', today).single()
+  const { data } = await supabaseAdmin.from('usage').select('tests_generated').eq('user_id', userId).eq('date', today).single() as any
   return data?.tests_generated || 0
 }
 
 export async function incrementUsage(userId: string): Promise<void> {
   const today = new Date().toISOString().split('T')[0]
-  const { data } = await supabaseAdmin.from('usage').select('id, tests_generated').eq('user_id', userId).eq('date', today).single()
+  const { data } = await supabaseAdmin.from('usage').select('id, tests_generated').eq('user_id', userId).eq('date', today).single() as any
   if (data) {
     await supabaseAdmin.from('usage').update({ tests_generated: data.tests_generated + 1 }).eq('id', data.id)
   } else {
