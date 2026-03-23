@@ -16,7 +16,7 @@ export default function ResultPage() {
   const supabase     = createBrowserClient()
 
   useEffect(() => {
-    const id = searchParams.get('id')
+    const id = searchParams?.get('id')
     if (!id) { router.push('/dashboard'); return }
     fetchResult(id)
   }, [])
