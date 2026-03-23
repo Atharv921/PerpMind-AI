@@ -62,7 +62,7 @@ export default function DashboardPage() {
       <Navbar />
       <div className="page-container">
 
-        {searchParams.get('upgraded') && (
+        {searchParams?.get('upgraded') && (
           <div className="mb-6 p-4 rounded-xl border border-[#6366F1]/30 flex items-center gap-3 animate-slide-up"
             style={{ background:'linear-gradient(135deg,rgba(99,102,241,0.2),rgba(139,92,246,0.2))' }}>
             <span className="text-2xl">🎉</span>
