@@ -78,8 +78,8 @@ Return ONLY valid JSON:
     return {
       overall_performance: pct >= 70 ? 'Good performance! Keep studying.' : "Keep practising — you'll improve!",
       score_percentage: pct,
-      strong_topics:  [...new Set(correctTopics)].slice(0, 3),
-      weak_topics:    [...new Set(wrongTopics)].slice(0, 3),
+      strong_topics:  Array.from(new Set(correctTopics)).slice(0, 3),
+      weak_topics:    Array.from(new Set(wrongTopics)).slice(0, 3),
       recommendations: ['Review weak topics', 'Focus on concepts not memorisation', 'Retake a test to track progress'],
       detailed_feedback: `You scored ${pct}%. Focus on your weak areas and keep practising.`,
     }
